@@ -6,6 +6,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/egorka-gh/sm/slc/post"
 )
@@ -50,9 +51,8 @@ func (c *Client) ParseIW(in io.Reader) (*post.Package, error) {
 	}
 	id = c.IDprefix + id
 	//doc date
-	created := record[4]
-	//yyyymmdd to yyyy-mm-ddT00:00:00 format
-	created = created[0:4] + "-" + created[4:6] + "-" + created[6:] + "T00:00:00"
+	//current date format yyyy-mm-ddT00:00:00
+	created := time.Now().Format("2006-01-02") + "T00:00:00"
 	//loc to
 	to, err := strconv.Atoi(record[9])
 	if err != nil {
@@ -60,7 +60,9 @@ func (c *Client) ParseIW(in io.Reader) (*post.Package, error) {
 	}
 	iw := post.NewIW(id, created, c.LocFrom, to, c.Client, c.IWopcode, c.IWstate)
 	iw.AddBaseDoc("SO", record[0])
-	iw.AddProp("CustomLabels.User.PaperTTNNumber", record[3])
+	//20200228 00:00:00
+	docDate := record[4] + " 00:00:00"
+	iw.AddProp("CustomLabels.Дата накладной", docDate)
 
 	//parse doc body
 	for {
