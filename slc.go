@@ -59,7 +59,7 @@ func (c *Client) ParseIW(in io.Reader) (*post.Package, error) {
 		return nil, fmt.Errorf("ParseIW (header): location '%s' is not int", record[9])
 	}
 	iw := post.NewIW(id, created, c.LocFrom, to, c.Client, c.IWopcode, c.IWstate)
-	iw.AddBaseDoc("SO", record[0])
+	iw.AddBaseDoc("SO", strings.TrimLeft(record[0], "0"))
 	//20200228 00:00:00
 	docDate := record[4] + " 00:00:00"
 	iw.AddProp("CustomLabels.Дата накладной", docDate)
